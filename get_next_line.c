@@ -6,7 +6,7 @@
 /*   By: nschwarz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/05 13:39:47 by nschwarz          #+#    #+#             */
-/*   Updated: 2017/12/05 14:22:21 by nono             ###   ########.fr       */
+/*   Updated: 2017/12/08 15:45:24 by scornaz          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,32 +16,34 @@ static int		ft_open(int const fd, char **stock)
 {
 	int		i;
 	char	*str;
-	char	*buf;
+	char	buf[BUFF_SIZE];
 
-	if (!(buf = (char *)malloc(sizeof(*buf) * (BUFF_SIZE + 1))))
-		return (-1);
 	i = read(fd, buf, BUFF_SIZE);
 	if (i > 0)
 	{
 		buf[i] = '\0';
-		str = ft_strjoin(*stock, buf);
-		free(*stock);
-		*stock = str;
+		if(!*stock)
+			*stock = ft_strdup(buf);
+		else
+		{
+			str = ft_strjoin(*stock, buf);
+			free(*stock);
+			*stock = str;
+		}
 	}
-	free(buf);
 	return (i);
 }
 
 int				get_next_line(int const fd, char **line)
 {
 	static char	*s = NULL;
-	char		*op;
+	char		*op = NULL;
 	int			i;
 
-	if ((!s && (s = (char *)malloc(sizeof(*s))) == NULL) || !line
-			|| fd < 0 || BUFF_SIZE < 0)
+	if (!line || fd < 0 || BUFF_SIZE < 0)
 		return (-1);
-	op = ft_strchr(s, '\n');
+	if (s)
+		op = ft_strchr(s, '\n');
 	while (op == NULL)
 	{
 		i = ft_open(fd, &s);
