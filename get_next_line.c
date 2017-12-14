@@ -5,60 +5,51 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: nschwarz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/12/05 13:39:47 by nschwarz          #+#    #+#             */
-/*   Updated: 2017/12/08 15:45:24 by scornaz          ###   ########.fr       */
+/*   Created: 2017/12/14 13:43:42 by nschwarz          #+#    #+#             */
+/*   Updated: 2017/12/14 13:49:08 by nschwarz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static int		ft_open(int const fd, char **stock)
+char	*ft_read(const int fd, char **to_read, int *i)
 {
-	int		i;
-	char	*str;
-	char	buf[BUFF_SIZE];
+	char	tmp[BUFF_SIZE + 1];
+	char	*stock;
 
-	i = read(fd, buf, BUFF_SIZE);
-	if (i > 0)
-	{
-		buf[i] = '\0';
-		if(!*stock)
-			*stock = ft_strdup(buf);
-		else
-		{
-			str = ft_strjoin(*stock, buf);
-			free(*stock);
-			*stock = str;
-		}
-	}
-	return (i);
+	*i = read(fd, tmp, BUFF_SIZE);
+	tmp[*i] = '\0';
+	stock = to_read[fd];
+	to_read[fd] = ft_strjoin(stock, tmp);
+	ft_memdel((void**)&stock);
+	return (to_read[fd]);
 }
 
-int				get_next_line(int const fd, char **line)
+int		get_next_line(const int fd, char **line)
 {
-	static char	*s = NULL;
-	char		*op = NULL;
-	int			i;
+	static char *s[4096];
+	int			ret;
+	char		*str;
 
-	if (!line || fd < 0 || BUFF_SIZE < 0)
+	if (!(line) || fd < 0 || fd > 4096)
 		return (-1);
-	if (s)
-		op = ft_strchr(s, '\n');
-	while (op == NULL)
+	if ((ret = 1) && !(s[fd]))
+		s[fd] = ft_strnew(0);
+	while (ret > 0)
 	{
-		i = ft_open(fd, &s);
-		if (i == 0)
-		{
-			if (ft_strlen(s) == 0)
-				return (0);
-			s = ft_strjoin(s, "\n");
-		}
-		if (i < 0)
+		if ((s[fd] = learn_to_read(fd, s, &ret)) && ret < 0)
 			return (-1);
-		else
-			op = ft_strchr(s, '\n');
+		if ((str = ft_memchr(s[fd], '\n', ft_strlen(s[fd]))))
+		{
+			*str = '\0';
+			*line = ft_strdup(s[fd]);
+			ft_memmove(s[fd], str + 1, ft_strlen(str + 1) + 1);
+			return (1);
+		}
 	}
-	*line = ft_strsub(s, 0, ft_strlen(s) - ft_strlen(op));
-	s = ft_strdup(op + 1);
-	return (1);
+	if ((*s[fd]) && (*line = ft_strdup(s[fd])))
+		if ((str = ft_memchr(s[fd], '\0', ft_strlen(s[fd]) + 1)) &&
+			(ft_memmove(s[fd], str + 1, ft_strlen(str + 1) + 1)))
+			return (1);
+	return (0);
 }
