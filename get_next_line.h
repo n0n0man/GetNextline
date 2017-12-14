@@ -6,7 +6,7 @@
 /*   By: scollet <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/03/09 11:01:26 by scollet           #+#    #+#             */
-/*   Updated: 2017/12/14 13:48:04 by nschwarz         ###   ########.fr       */
+/*   Updated: 2017/12/14 14:01:05 by nschwarz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,6 @@
 # include "libft/libft.h"
 
 int		get_next_line(const int fd, char **line);
-char	*learn_to_read(const int fd, char **block, int *s);
+char	*ft_read(const int fd, char **to_read, int *i);
 
 #endif

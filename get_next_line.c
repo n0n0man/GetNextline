@@ -6,7 +6,7 @@
 /*   By: nschwarz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/14 13:43:42 by nschwarz          #+#    #+#             */
-/*   Updated: 2017/12/14 13:49:08 by nschwarz         ###   ########.fr       */
+/*   Updated: 2017/12/14 14:02:57 by nschwarz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int		get_next_line(const int fd, char **line)
 		s[fd] = ft_strnew(0);
 	while (ret > 0)
 	{
-		if ((s[fd] = learn_to_read(fd, s, &ret)) && ret < 0)
+		if ((s[fd] = ft_read(fd, s, &ret)) && ret < 0)
 			return (-1);
 		if ((str = ft_memchr(s[fd], '\n', ft_strlen(s[fd]))))
 		{
